@@ -15,6 +15,27 @@ function creerModeleDocument(titre) {
   body.appendParagraph("Email : {{Email}}");
   body.appendParagraph("Date d’échéance : {{Date_échéance}}");
 
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); // ou getSheetByName("NomFeuille")
+  var headers = ["Id", "Nom_client", "Address_client", "Telephone", "Email", "Date_échéance", "URL Document"];
+
+  // Écriture des en-têtes
+  var range = sheet.getRange(1, 1, 1, headers.length);
+  range.setValues([headers]);
+
+  // Application du style : Gras, Noir, Georgia, Centré
+  range.setFontWeight("bold");
+  range.setFontColor("black");
+  range.setFontSize(12);
+  range.setFontFamily("Georgia");
+  range.setHorizontalAlignment("center");
+
+  // Fixer les largeurs des colonnes A à G manuellement (en pixels)
+  var columnWidths = [60, 120, 180, 100, 180, 140, 600];  // Exemple de tailles
+
+  for (var col = 1; col <= columnWidths.length; col++) {
+    sheet.setColumnWidth(col, columnWidths[col - 1]);
+  }
+
   return doc;
 }
 
