@@ -92,6 +92,11 @@ function remplirDocumentDepuisSheet(rowIndex) {
  * Enregistre les URL des documents générés dans la feuille sur chaque ligne correspondante.
  **/
 function genererationDocParClient() {
+  // Confirmation de l'utilisateur 
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.alert("Confirmation", "Voulez-vous générer les documents pour tous les clients ?", ui.ButtonSet.YES_NO);
+  if (response == ui.Button.NO) return;
+
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName("Données");
   if (!sheet) return;
@@ -165,6 +170,11 @@ function genererationDocParClient() {
  * Génère un seul document contenant tous les clients et l’exporte en PDF.
  **/
 function generationDocSurPage() {
+    // Confirmation de l'utilisateur 
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.alert("Confirmation", "Voulez-vous générer les documents pour tous les clients sur une page ?", ui.ButtonSet.YES_NO);
+  if (response == ui.Button.NO) return;
+
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName("Données");
   if (!sheet) return;
