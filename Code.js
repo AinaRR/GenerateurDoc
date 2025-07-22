@@ -1,3 +1,6 @@
+function onOpen(){
+  creerModeleDocument();
+}
 /**
  * Crée un modèle de document Google Docs avec des balises de remplacement.
  * @param {string} titre - Le titre du document à créer.
@@ -28,6 +31,7 @@ function creerModeleDocument(titre) {
   range.setFontSize(12);
   range.setFontFamily("Georgia");
   range.setHorizontalAlignment("center");
+  range.setBackground("#edbb99");
 
   // Fixer les largeurs des colonnes A à G manuellement (en pixels)
   var columnWidths = [60, 120, 180, 100, 180, 140, 600];  // Exemple de tailles
