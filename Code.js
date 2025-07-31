@@ -1,6 +1,14 @@
-function onOpen(){
-  creerModeleDocument();
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu("📄 Génération de documents")
+    .addItem("🔁 Un document par client", "generationDocParClient")
+    .addItem("📄 Tous les clients sur une page (PDF)", "generationDocSurPage")
+    .addItem("🧪 Générer client test (numéro de la ligne)", "testClient")
+    .addToUi();
+
+    creerModeleDocument();
 }
+
 /**
  * Crée un modèle de document Google Docs avec des balises de remplacement.
  * @param {string} titre - Le titre du document à créer.
@@ -91,12 +99,12 @@ function remplirDocumentDepuisSheet(rowIndex) {
   SpreadsheetApp.getUi().alert("Document généré :\n" + doc.getUrl());
 }
 
+
 /**
  * Génère un document personnalisé pour chaque ligne (client) dans la feuille "Données".
  * Enregistre les URL des documents générés dans la feuille sur chaque ligne correspondante.
  **/
-function genererationDocParClient() {
-  // Confirmation de l'utilisateur 
+function generationDocParClient() {
   var ui = SpreadsheetApp.getUi();
   var response = ui.alert("Confirmation", "Voulez-vous générer les documents pour tous les clients ?", ui.ButtonSet.YES_NO);
   if (response == ui.Button.NO) return;
@@ -106,17 +114,22 @@ function genererationDocParClient() {
   if (!sheet) return;
 
   var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  var dataRange = sheet.getRange(2, 1, sheet.getLastRow() - 1, headers.length);
+
+  // 🧹 Réinitialisation de la colonne G (URL Document), ligne 2 à la dernière ligne
+  var lastRow = sheet.getLastRow();
+  if (lastRow >= 2) {
+    sheet.getRange(2, 7, lastRow - 1).clearContent(); // colonne G = 7
+  }
+
+  var dataRange = sheet.getRange(2, 1, lastRow - 1, headers.length);
   var toutesLesLignes = dataRange.getValues();
 
-  // Ajouter la colonne "URL Document" si elle n'existe pas
   var urlColIndex = headers.indexOf("URL Document");
   if (urlColIndex === -1) {
     sheet.getRange(1, headers.length + 1).setValue("URL Document");
     urlColIndex = headers.length;
   }
 
-  // Récupérer le dossier contenant le fichier Spreadsheet
   var fichier = DriveApp.getFileById(ss.getId());
   var dossier;
   var parents = fichier.getParents();
@@ -126,7 +139,6 @@ function genererationDocParClient() {
     dossier = DriveApp.createFolder("Documents générés");
   }
 
-  // Boucle sur chaque ligne/client
   for (var i = 0; i < toutesLesLignes.length; i++) {
     var values = toutesLesLignes[i];
     var data = {};
@@ -156,14 +168,11 @@ function genererationDocParClient() {
 
     doc.saveAndClose();
 
-    // Déplacement dans le bon dossier Drive
     var fichierDoc = DriveApp.getFileById(doc.getId());
     dossier.addFile(fichierDoc);
-    DriveApp.getRootFolder().removeFile(fichierDoc); // Supprime du dossier racine
+    DriveApp.getRootFolder().removeFile(fichierDoc);
 
     var url = doc.getUrl();
-
-    // Insérer l’URL dans la feuille
     sheet.getRange(i + 2, urlColIndex + 1).setValue(url);
   }
 
